@@ -73,12 +73,12 @@
   * [计划](d/todo.md)
   * [项目](d/projects.md)
   * ------
-  * [@我的博客](http://blog.yongliang.info/)
+  * [@我的博客](https://b.rkcn.me/)
   * [@享链](http://rkwp.sinaapp.com/bookmark/)
   * [@网盘搜索](http://rkwp.sinaapp.com/searcher/)
   * [@妹子福利](http://rkwp.sinaapp.com/mm/)
 
-[@关于我](http://blog.yongliang.info/about.md)
+[@关于我](https://b.rkcn.me/post/about/)
 
 
 <!--
