@@ -1,0 +1,27 @@
+#!/bin/bash
+
+IMAGE="mongo"
+VERSION=":latest"
+NAME="mongo"
+
+# container setting...
+PORT_A=27017
+DATA_DIR="/data/Cells/mongo/data"
+
+# check the instance state of exists
+EXISTS=$(docker ps | grep "$IMAGE$VERSION" | wc -l)
+if [ $EXISTS -eq 1 ]
+then
+	echo "... already exists a instance of [$IMAGE$VERSION], now stop it by automaticaly..."
+	docker rm -f $NAME 2>&1 > /dev/null
+fi
+
+
+echo "... starting [$IMAGE$VERSION] as named $NAME, please waiting..."
+docker run \
+-d \
+-p $PORT_A:27017 \
+-v $DATA_DIR:/data/db \
+--name $NAME \
+$IMAGE$VERSION \
+ 2>&1 > /dev/null

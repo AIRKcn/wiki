@@ -1,0 +1,32 @@
+#!/bin/bash
+
+IMAGE="camil/verynginx"
+VERSION=":latest"
+NAME="nginx"
+
+# container setting...
+PORT_A=80
+PORT_B=443
+ROOT_DIR="/data/Cells/verynginx"
+CONF_DIR="$ROOT_DIR/config"
+WORK_DIR="/data/vhosts"
+
+# check the instance state of exists
+EXISTS=$(docker ps | grep "$IMAGE$VERSION" | wc -l)
+if [ $EXISTS -eq 1 ]
+then
+	echo "... already exists a instance of [$IMAGE$VERSION], now stop it by automaticaly..."
+	docker rm -f $NAME 2>&1 > /dev/null
+fi
+
+
+echo "... starting [$IMAGE$VERSION] as named $NAME, please waiting..."
+docker run \
+-d \
+-p $PORT_A:80 \
+-p $PORT_B:443 \
+-v $CONF_DIR:/opt/VeryNginx/nginx/default.conf \
+-v $WORK_DIR:/var/nginx \
+--name $NAME \
+$IMAGE$VERSION \
+ 2>&1 > /dev/null

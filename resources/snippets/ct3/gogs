@@ -1,0 +1,121 @@
+#!/bin/bash
+##
+# [Gogs 是 GoLang 实现的一套类似 Gitlab 的一个用于个人或小团队使用的代码版本控制服务]
+#
+# 用于ubuntu/debain系统服务使用
+# version : 1
+# code by Robert <cnwangyl@gmail.com>
+# blog : http://blog.yongliang.info
+# qq : 18997041
+# 使用方法：
+# 1. 此代码内容存放至 /etc/init.d/gogs 文件中
+# 2. chmod +x /etc/init.d/gogs
+# 3. 修改此代码片断中的相关变量配置
+# 4. 此服务中使用到了 git 用户进行启动服务
+# 5. 执行此脚本的用户应为 root 用户
+# 代码拙劣，还请见谅，如果更新或建议 或 有使用问题可以QQ交流
+##
+
+
+### BEGIN INIT INFO
+# Provides: linux-restricted-modules
+# Required-Start: $local_fs
+# Required-Stop:
+# Default-Start: S 0 3 6
+# Default-Stop:
+# Short-Description: Setup the linux restricted modules
+# Description: Link the linux restricted modules at run time.
+### END INIT INFO
+
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+NAME=gogs
+DESC=gogs
+
+EXEC_PATH=/home/git/golang/src/github.com/gogits/gogs
+EXEC_NAME=gogs
+EXEC_ARGS=web
+EXEC_DEAMON="./$EXEC_NAME $EXEC_ARGS"
+PID_FILE=/var/run/gogs.pid
+
+test -x $EXEC_PATH/$EXEC_NAME || exit 0
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+	RETVAL=0
+	PID=$(pgrep -f "$EXEC_DEAMON")
+	if ! [ -z "$PID" ] ; then
+		unset PID
+		return "$RETVAL"
+	fi
+	su git -c "cd $EXEC_PATH; $EXEC_DEAMON > /dev/null &"
+	PID=$(pgrep -f "$EXEC_DEAMON")
+	if ! [ -z "$PID" ] ; then
+		RETVAL=1
+		echo "$PID" > $PID_FILE
+	fi
+	unset PID
+	return "$RETVAL"
+}
+
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+	RETVAL=0
+	PID=$(pgrep -f "$EXEC_DEAMON")
+        if ! [ -z "$PID" ] ; then
+		kill -9 $PID
+		RETVAL=1
+        fi
+	return "$RETVAL"
+}
+
+#
+# Function that sends a SIGHUP to the daemon/service
+#
+do_restart() {
+	do_stop
+	do_start
+	return 0
+}
+
+
+case "$1" in
+	start)
+		do_start
+		case "$?" in
+			0) echo "ERROR : $EXEC_NAME start fail" ;;
+			1) echo "SUCCESS : $EXEC_NAME is started" ;;
+		esac
+		;;
+	stop)
+		do_stop
+		case "$?" in
+			0) echo "ERROR : $EXEC_NAME start fail" ;;
+			1) echo "SUCCESS : $EXEC_NAME is started" ;;
+		esac
+		;;
+	restart)
+		do_restart
+		;;
+	status)
+		PID=$(pgrep -f "$EXEC_DEAMON")
+		if ! [ -z "$PID" ] ; then
+			echo "STATUS : $EXEC_NAME is running ($PID)"
+		else
+			echo "STATUS : $EXEC_NAME is not running"
+		fi
+		;;
+	*)
+		echo "Usage: $NAME {start|stop|restart|status}">&2
+		exit 3
+		;;
+esac
+
+:

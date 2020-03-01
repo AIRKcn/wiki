@@ -1,0 +1,36 @@
+#!/bin/sh 
+
+# [Aria2 是一个基于 Linux 命令行的网络下载服务功能，可以支持 HTTP / BT / 磁力链 的下载]
+#
+# 程序安装
+# apt-get install -y aria2c
+# @description: Aria2 服务启动脚本
+
+### BEGIN INIT INFO
+# Provides: aria2
+# Required-Start: $remote_fs $network
+# Required-Stop: $remote_fs $network
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Aria2 Downloader
+### END INIT INFO
+
+
+case "$1" in
+start)
+	echo -n "Aria2c started"
+	aria2c --conf-path=/etc/aria2/aria2.conf -D
+	#sudo -u后面的是你正在使用的用户名，因为我用的nixonli，别忘记改成自己的
+	;;
+stop)
+	echo -n "Aria2c closed"
+	killall aria2c
+	;;
+restart)
+	killall aria2c
+	aria2c --conf-path=/etc/aria2/aria2.conf -D
+	#同上面的一样，根据自己的用户名改nixonli
+	;;
+esac
+
+exit

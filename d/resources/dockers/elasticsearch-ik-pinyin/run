@@ -1,0 +1,32 @@
+#!/bin/bash
+
+IMAGE="liukaitj/elasticsearch-ik-pinyin-docker"
+VERSION=":latest"
+NAME="esikpy"
+
+# container setting...
+PORT_A=9200
+PORT_B=9300
+ROOT_DIR=/data/elasticsearch
+
+# check the instance state of exists
+EXISTS=$(docker ps -a | grep " $NAME" | wc -l)
+if [ $EXISTS -eq 1 ]
+then
+        echo "... already exists a instance of [$IMAGE$VERSION] named [$NAME], now stop it by automaticaly..."
+        docker rm -f $NAME 2>&1 > /dev/null
+fi
+
+echo "... starting [$IMAGE$VERSION] as named $NAME, please waiting..."
+docker run \
+-d \
+-p $PORT_A:9200 \
+-p $PORT_B:9300 \
+-v "$ROOT_DIR/config":/elasticsearch/config \
+-v "$ROOT_DIR/data":/data \
+-v "$ROOT_DIR/logs":/logs \
+--entrypoint="/elasticsearch/config/before_run.sh" \
+--name $NAME \
+$IMAGE$VERSION \
+ 2>&1 > /dev/null
+

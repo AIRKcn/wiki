@@ -1,0 +1,27 @@
+#!/bin/bash
+
+IMAGE="liuzhengyang/elasticsearch-ik"
+VERSION=":2.2.0"
+C_NAME="elasticsearch-ik"
+ROOTDIR="/data/elasticsearch-ik"
+TPORT=9201
+TPORT1=9301
+
+# check the instance state of exists
+EXISTS=$(docker ps | grep "$IMAGE$VERSION" | wc -l)
+if [ $EXISTS -eq 1 ]
+then
+	echo "... already exists a instance of [$IMAGE$VERSION], now stop it by automaticaly..."
+	docker rm -f $C_NAME  2>&1 > /dev/null
+fi
+
+echo "... starting [$IMAGE$VERSION] as named $NAME, please waiting..."
+docker run -d \
+--name=$C_NAME \
+-v $ROOTDIR/data:/usr/share/elasticsearch/data \
+-v $ROOTDIR/config:/usr/share/elasticsearch/config \
+-v $ROOTDIR/logs:/usr/share/elasticsearch/logs \
+-p $TPORT:9200 \
+-p $TPORT1:9300 \
+$IMAGE$VERSION \
+ 2>&1 > /dev/null

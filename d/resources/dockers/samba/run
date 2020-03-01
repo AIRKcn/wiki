@@ -1,0 +1,36 @@
+#!/bin/bash
+
+IMAGE="dperson/samba"
+VERSION=":latest"
+NAME="samba"
+
+# container setting...
+PORT_A=139
+PORT_B=445
+USERNAME="robert"
+PASSWORD="1qaz@WSX3edc"
+SHARENAME="share"
+TIMEZONE="ASIA/Shanghai"
+
+
+# check the instance state of exists
+EXISTS=$(docker ps | grep "$IMAGE$VERSION" | wc -l)
+if [ $EXISTS -eq 1 ]
+then
+	echo "... already exists a instance of [$IMAGE$VERSION], now stop it by automaticaly..."
+	docker rm -f $NAME 2>&1 > /dev/null
+fi
+
+
+echo "... starting [$IMAGE$VERSION] as named $NAME, please waiting..."
+docker run \
+-d \
+-p $PORT_A:139 \
+-p $PORT_B:445 \
+-v /data:/mount \
+-e "TZ=$TIMEZONE" \
+--name $NAME \
+$IMAGE$VERSION \
+-u "$USERNAME;$PASSWORD" \
+-s "$SHARENAME;/mount;yes;no;no;$USERNAME;$USERNAME" \
+ 2>&1 > /dev/null
